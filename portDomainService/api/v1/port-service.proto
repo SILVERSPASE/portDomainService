@@ -1,0 +1,76 @@
+syntax = "proto3";
+package v1;
+
+// Taks we have to do
+message Port {
+    string portID  = 1;
+    string name = 2;
+}
+
+// Request data to create new Port
+message CreateRequest{
+    string api = 1;
+    Port port = 2;
+}
+
+// Contains data of created Port
+message CreateResponse{
+    string api = 1;
+    string portID = 2;
+}
+
+// Request data to read Port
+message ReadRequest{
+    string api = 1;
+    string portID = 2;
+}
+
+// Contains port data specified in by ID request
+message ReadResponse{
+    string api = 1;
+    Port port = 2;
+}
+
+// Request data to update port
+message LoadFromJSONRequest{
+    string api = 1;
+    repeated Port ports = 2;
+}
+
+// Contains status of update operation
+message LoadFromJSONResponse{
+    string api = 1;
+    string loadedCount = 2;
+}
+
+// Request data to delete port
+message DeleteRequest{
+    string api = 1;
+    string portID = 2;
+}
+
+// Contains status of delete operation
+message DeleteResponse{
+    string api = 1;
+    string portID = 2;
+}
+
+// Request data to read all ports
+message ReadAllRequest{
+    string api = 1;
+}
+
+// Contains list of all ports
+message ReadAllResponse{
+    string api = 1;
+    repeated Port ports = 2;
+}
+
+// Service to manage ports
+service PortService {
+    rpc Create(CreateRequest) returns (CreateResponse);
+    rpc LoadFromJSON(LoadFromJSONRequest) returns (LoadFromJSONResponse);
+    rpc Read(ReadRequest) returns (ReadResponse);
+    rpc Delete(DeleteRequest) returns (DeleteResponse);
+    rpc ReadAll(ReadAllRequest) returns (ReadAllResponse);
+}
