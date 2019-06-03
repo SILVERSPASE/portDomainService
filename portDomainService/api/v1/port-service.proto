@@ -7,6 +7,11 @@ message Port {
     string name = 2;
 }
 
+message JSONPort {
+    string api = 1;
+    map<string, Port> ports = 2;
+}
+
 // Request data to create new Port
 message CreateRequest{
     string api = 1;
@@ -34,13 +39,16 @@ message ReadResponse{
 // Request data to update port
 message LoadFromJSONRequest{
     string api = 1;
-    repeated Port ports = 2;
+    map<string, Port> ports = 2;
 }
 
 // Contains status of update operation
 message LoadFromJSONResponse{
     string api = 1;
-    string loadedCount = 2;
+    int64 created = 2;
+    int64 updated = 3;
+    int64 skipped = 4;
+    int64 records = 5;
 }
 
 // Request data to delete port

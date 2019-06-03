@@ -38,21 +38,14 @@ func (s *portServiceServer) Create(ctx context.Context, req *proto.CreateRequest
 	}
 	collection := s.db.Collection("ports")
 
-	var v interface{}
-	err := collection.FindOneAndUpdate(ctx, bson.M{"portid": req.Port.PortID}, bson.M{"$set": req.Port}).Decode(&v)
-	if err != nil && err.Error() == noDocumentsInResult {
-		res, err := collection.InsertOne(ctx, req.Port)
-		if err != nil {
-			return nil, err
-		}
-		log.Println("Inserted a single document: ", res.InsertedID)
-		return &proto.CreateResponse{
-			Api:    apiVersion,
-			PortID: req.Port.PortID,
-		}, nil
-	}
+	opts := options.UpdateOptions{}
+	opts.Upsert = newTrue()
 
-	log.Println("Updated existed document: ", req.Port.PortID)
+	res, err := collection.UpdateOne(ctx, bson.M{"portid": req.Port.PortID}, bson.M{"$set": req.Port}, &opts)
+	fmt.Println(res)
+	if err != nil {
+		return nil, err
+	}
 	return &proto.CreateResponse{
 		Api:    apiVersion,
 		PortID: req.Port.PortID,
@@ -78,24 +71,52 @@ func (s *portServiceServer) Read(ctx context.Context, req *proto.ReadRequest) (*
 
 // Update port
 func (s *portServiceServer) LoadFromJSON(ctx context.Context, req *proto.LoadFromJSONRequest) (*proto.LoadFromJSONResponse, error) {
+	//collection := s.db.Collection("ports")
+	//opts := options.UpdateOptions{Upsert: newTrue()}
+	//_, err := collection.UpdateMany(ctx, bson.D{},  bson.M{"$set": req.Ports}, &opts)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//return &proto.LoadFromJSONResponse{
+	//	Api:         apiVersion,
+	//	LoadedCount: "12",
+	//}, nil
+
+	var records, created, updated, skipped int64
+	if err := s.checkAPI(req.Api); err != nil {
+		return nil, err
+	}
 	collection := s.db.Collection("ports")
-	var needed []interface{}
-	for _, val := range req.Ports {
-		needed = append(needed, *val)
-	}
 
-	opts := options.UpdateOptions{Upsert: newTrue()}
+	opts := options.UpdateOptions{}
+	opts.Upsert = newTrue()
 
-	res, err := collection.UpdateMany(ctx, bson.M{}, needed, &opts)
-	if err != nil {
-		log.Fatal(err)
+
+
+	for key, val := range req.Ports {
+		onePort := *val
+		onePort.PortID = key
+		res, err := collection.UpdateOne(ctx, bson.M{"portid": onePort.PortID}, bson.M{"$set": onePort}, &opts)
+		if err != nil {
+			return nil, err
+		}
+		records++
+		created += res.UpsertedCount
+		updated += res.ModifiedCount
+		if res.UpsertedCount + res.ModifiedCount == 0 {
+			skipped += res.MatchedCount
+		}
+
 	}
-	fmt.Println(res)
 
 	return &proto.LoadFromJSONResponse{
-		Api:         apiVersion,
-		LoadedCount: "12",
+		Api:    apiVersion,
+		Records: records,
+		Created: created,
+		Updated: updated,
+		Skipped: skipped,
 	}, nil
+
 }
 
 // Delete port
@@ -131,7 +152,7 @@ func (s *portServiceServer) ReadAll(ctx context.Context, req *proto.ReadAllReque
 	}
 	collection := s.db.Collection("ports")
 
-	cur, err := collection.Find(ctx, bson.D{})
+	cur, err := collection.Find(ctx, bson.M{})
 	if err != nil {
 		return nil, err
 	}

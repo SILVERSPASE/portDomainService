@@ -3,7 +3,6 @@ package api
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -35,7 +34,7 @@ func (s *APIServer) DeletePort(w http.ResponseWriter, r *http.Request) {
 func (s *APIServer) AddPort(w http.ResponseWriter, r *http.Request) { //TODO get port from request
 	port := &proto.Port{
 		PortID: "test",
-		Name:   "test",
+		Name:   "test2222",
 	}
 	id, err := s.Service.Create(context.TODO(), &proto.CreateRequest{Api: s.API, Port: port})
 	if err != nil {
@@ -45,32 +44,24 @@ func (s *APIServer) AddPort(w http.ResponseWriter, r *http.Request) { //TODO get
 }
 
 func (s *APIServer) LoadFromJSON(w http.ResponseWriter, r *http.Request) {
-	var portsArr []*proto.Port
 
-	input, err := ioutil.ReadFile("/Users/ashch/go/src/github.com/silverspase/portDomainService/clientAPI/server/ports.json")
+	input, err := ioutil.ReadFile("/Users/ashch/go/src/github.com/silverspase/portService/clientAPI/cmd/ports.json")
 	if err != nil {
 		log.Fatal(err)
 	}
-	var ports map[string]proto.Port
+	var ports map[string]*proto.Port
 
 	err = json.Unmarshal([]byte(input), &ports)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println(ports)
-
-	for k, val := range ports {
-		val.PortID = k
-		portsArr = append(portsArr, &val)
-	}
-
 	res, err := s.Service.LoadFromJSON(context.TODO(), &proto.LoadFromJSONRequest{
 		Api:   s.API,
-		Ports: portsArr,
+		Ports: ports,
 	})
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	render.JSON(w, r, res)
 
