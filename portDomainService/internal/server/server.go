@@ -45,3 +45,4 @@ func RunServer() error {
 	v1API := proto.NewPortServiceServer(db)
 	return grpc.RunServer(ctx, v1API, cfg.GRPCPort)
 }
+

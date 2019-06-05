@@ -22,7 +22,6 @@ func (s *APIServer) Routes() {
 	)
 	s.Router.Get("/{portID}", s.GetAPort)
 	s.Router.Delete("/{portID}", s.DeletePort)
-	s.Router.Post("/", s.AddPort)
 	s.Router.Post("/json", s.LoadFromJSON)
 	s.Router.Get("/", s.GetAllPorts)
 

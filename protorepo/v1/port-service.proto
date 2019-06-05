@@ -1,10 +1,18 @@
 syntax = "proto3";
 package v1;
 
-// Taks we have to do
 message Port {
     string portID  = 1;
     string name = 2;
+    string city = 3;
+    string country = 4;
+    repeated string  alias = 5;
+    repeated string  regions = 6;
+    repeated float  coordinates = 7;
+    string province = 8;
+    string timezone = 9;
+    repeated string  unlocs = 10;
+    string code = 11;
 }
 
 message JSONPort {

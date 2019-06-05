@@ -1,9 +1,10 @@
 package api
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 
@@ -31,27 +32,31 @@ func (s *APIServer) DeletePort(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, id)
 }
 
-func (s *APIServer) AddPort(w http.ResponseWriter, r *http.Request) { //TODO get port from request
-	port := &proto.Port{
-		PortID: "test",
-		Name:   "test2222",
-	}
-	id, err := s.Service.Create(context.TODO(), &proto.CreateRequest{Api: s.API, Port: port})
-	if err != nil {
-		log.Fatal(err)
-	}
-	render.JSON(w, r, id)
-}
 
 func (s *APIServer) LoadFromJSON(w http.ResponseWriter, r *http.Request) {
+	//ctx := r.Context()
 
-	input, err := ioutil.ReadFile("/Users/ashch/go/src/github.com/silverspase/portService/clientAPI/cmd/ports.json")
-	if err != nil {
-		log.Fatal(err)
+	// ParseMultipartForm will keep fileMaxSize in memory and rest in disk trying to be not greedy by memory.
+	if err := r.ParseMultipartForm(1*1024*1024); err != nil {
+		render.JSON(w, r, err)
 	}
+	defer r.Body.Close()
+
+	file, _, err := r.FormFile("uploadFile")
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
+
+	buf := bytes.NewBuffer(nil)
+	if _, err := io.Copy(buf, file); err != nil {
+		render.JSON(w, r, err)
+	}
+
 	var ports map[string]*proto.Port
 
-	err = json.Unmarshal([]byte(input), &ports)
+	err = json.Unmarshal(buf.Bytes(), &ports)
 	if err != nil {
 		log.Fatal(err)
 	}
