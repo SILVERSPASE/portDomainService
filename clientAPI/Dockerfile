@@ -8,4 +8,4 @@ COPY . /go/src/github.com/silverspase/portService/clientAPI/
 RUN go mod vendor
 RUN GOOS=linux GOARCH=amd64 go build ./cmd/main.go
 
-CMD ["./main", "-server=backend:9090", "-port=:8080"]
+CMD ["./main", "-server=server:9090", "-port=:8080"]

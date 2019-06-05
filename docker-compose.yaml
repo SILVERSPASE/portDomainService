@@ -6,7 +6,7 @@ services:
       - ./data/db:/data/db
     ports:
       - 27017:27017
-  backend:
+  server:
     build: ./portDomainService
     env_file:
       - .env
@@ -21,5 +21,5 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - backend
+      - server
     restart: on-failure
