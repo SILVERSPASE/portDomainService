@@ -32,7 +32,7 @@ We have prepared command for you - just run ```make json``` and it will send pos
 
 Or just go to the root of repo end send curl request:
 
-```crl localhost:8080/json -X POST -F 'uploadFile=@/Users/ashch/go/src/github.com/silverspase/portService/ports.json'```
+```curl localhost:8080/json -X POST -F 'uploadFile=@/Users/ashch/go/src/github.com/silverspase/portService/ports.json'```
 
 You will receive result of update ```{"api":"v1","created":1632,"records":1632}```
 
