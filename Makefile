@@ -14,3 +14,8 @@ client:
 
 json:
 	curl localhost:8080/json -X POST -F 'uploadFile=@/Users/ashch/go/src/github.com/silverspase/portService/ports.json'
+
+test-client-api:
+	cd ./clientAPI && go test -coverprofile c.out `go list ./... | grep -v 'mocks' | grep -v 'gen'`
+
+test: test-client-api

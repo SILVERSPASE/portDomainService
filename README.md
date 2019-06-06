@@ -27,6 +27,9 @@ You also can run it locally by running several commands in separate terminal tab
 
 Notice - MongoDB runs in daemon mode - you should stop and kill docker container with it to use docker-compose up command
 
+### Test it
+To test code run ```make test``` in the root of repo
+
 ### Call API
 We have prepared command for you - just run ```make json``` and it will send post request to client with ports.json file to save content to database.
 

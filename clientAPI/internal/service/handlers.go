@@ -16,11 +16,16 @@ import (
 
 func (s *APIServer) GetAPort(w http.ResponseWriter, r *http.Request) {
 	portID := chi.URLParam(r, "portID")
+	if portID == "" {
+		render.JSON(w, r, "specify port id")
+		return
+	}
 	port, err := s.Service.Read(context.TODO(), &proto.ReadRequest{Api: s.API, PortID: portID})
 	if err != nil {
 		log.Fatal(err)
 	}
 	render.JSON(w, r, port)
+	return
 }
 
 func (s *APIServer) DeletePort(w http.ResponseWriter, r *http.Request) {
