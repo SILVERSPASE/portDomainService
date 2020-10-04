@@ -1,6 +1,6 @@
 # Port Domain Service
 
-Docker, GRPC, 2 microservice and MongoDB party
+Docker, GRPC, 2 microservices and MongoDB party
 
 ## Overview
 Here we have two microservices which in pair gives a possibility to upload json file with port list and save it to database.
